@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd	
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+	<!-- 只搜索@Controller 标注的类 不搜索其他标注的类 -->
+	<context:component-scan base-package="com.winning.kbms"
+		annotation-config="true">
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Service" />
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Repository" />
+	</context:component-scan>
+
+	<!-- Configures support for @Controllers -->
+	<mvc:annotation-driven>
+		<mvc:message-converters register-defaults="true">
+			<!-- StringHttpMessageConverter编码为UTF-8，防止乱码 -->
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<constructor-arg value="UTF-8" />
+				<property name="supportedMediaTypes">
+					<list>
+						<bean class="org.springframework.http.MediaType">
+							<constructor-arg index="0" value="text" />
+							<constructor-arg index="1" value="plain" />
+							<constructor-arg index="2" value="UTF-8" />
+						</bean>
+						<bean class="org.springframework.http.MediaType">
+							<constructor-arg index="0" value="*" />
+							<constructor-arg index="1" value="*" />
+							<constructor-arg index="2" value="UTF-8" />
+						</bean>
+					</list>
+				</property>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+
+	<!-- 对某些静态资源，如css,图片等进行过滤 ,有引用 "/resources/**" 的路径引用转到工程的/resources/目录取资源 -->
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+
+	<!-- jsp视图 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<!-- SpringMVC上传文件时，需要配置MultipartResolver处理器 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 指定所上传文件的总大小不能超过10M。注意maxUploadSize属性的限制不是针对单个文件，而是所有文件的容量之和 -->
+		<property name="maxUploadSize" value="10000000" />
+	</bean>
+
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/ws/**" />
+			<bean class="com.winning.kbms.core.interceptor.WsAuthorizingInterceptor"></bean>
+		</mvc:interceptor>
+		<mvc:interceptor>
+		<mvc:mapping path="/ruleSetting/setEnable.do"/>
+			<bean class="com.winning.kbms.core.interceptor.WsAuthorizingInterceptor"></bean>
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/engine/**"/>
+			<bean class="com.winning.kbms.core.interceptor.WsAuthorizingInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	<!--开发期间注释掉，上线后启用 错误解析器 发生错误默认会跳转到/WEB-INF/jsp/errorpage/500.jsp -->
+	<bean id="exceptionResolver" class="com.winning.kbms.core.resolver.HandlerExceptionResolver">
+		<property name="defaultErrorView" value="errorpage/500" />
+		<property name="exceptionMappings">
+			<props>
+				<prop key="org.apache.shiro.authc.UnknownAccountException">errorpage/no_permission</prop>
+				<prop key="org.apache.shiro.authz.UnauthorizedException">errorpage/no_permission</prop>
+			</props>
+		</property>
+		<property name="exceptionMappingsByAjax">
+			<props>
+			</props>
+		</property>
+	</bean>
+</beans>

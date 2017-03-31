@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	id="KBMS_WebApp_ID" version="2.5">
+
+	<display-name>KBMS</display-name>
+
+	<!-- session超时定义,单位为分钟 -->
+	<session-config>
+		<session-timeout>480</session-timeout>
+	</session-config>
+
+	<!-- Spring ApplicationContext配置文件的路径 ,可使用通配符，多个路径用,号分隔 -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:/spring-configs/applicationContext*.xml</param-value>
+	</context-param>
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	
+	<!-- Spring MVC start -->
+	<servlet>
+		<servlet-name>dispatcherServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<!-- 默认所对应的配置文件是WEB-INF下的{servlet-name}-servlet.xml，这里可以自定义路径 -->
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:/spring-configs/springmvc-servlet.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>dispatcherServlet</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+	<!-- Spring MVC end -->
+
+	<!--CXF 配置 
+	<servlet>
+		<description>web Service confing</description>
+		<display-name>CXF Servlet</display-name>
+		<servlet-name>CXFServlet</servlet-name>
+		<servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CXFServlet</servlet-name>
+		<url-pattern>/services/*</url-pattern>
+	</servlet-mapping>-->
+
+	<filter>
+		<filter-name>shiroFilter</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+		<init-param>
+			<param-name>targetFilterLifecycle</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>shiroFilter</filter-name>
+		<url-pattern>*.do</url-pattern>
+		<url-pattern>*.jsp</url-pattern>
+	</filter-mapping>
+
+	<filter>
+		<filter-name>GZIPFilter</filter-name>
+		<filter-class>com.tacitknowledge.filters.gzipfilter.GZIPFilter</filter-class>
+	</filter>
+	<filter>
+		<filter-name>CacheFilter</filter-name>
+		<filter-class>com.tacitknowledge.filters.cache.CacheHeaderFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>GZIPFilter</filter-name>
+		<url-pattern>*.js</url-pattern>
+		<url-pattern>*.css</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>CacheFilter</filter-name>
+		<url-pattern>*.gif</url-pattern>
+		<url-pattern>*.jpg</url-pattern>
+		<url-pattern>*.png</url-pattern>
+		<url-pattern>*.js</url-pattern>
+		<url-pattern>*.css</url-pattern>
+	</filter-mapping>
+
+	<!-- 著名 Character Encoding filter -->
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<!-- 强制进行转码 -->
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<welcome-file-list>
+		<welcome-file>/WEB-INF/jsp/login.jsp</welcome-file>
+	</welcome-file-list>
+
+	<!-- Error Page定义 -->
+	<error-page>
+		<error-code>404</error-code>
+		<location>/WEB-INF/jsp/errorpage/404.jsp</location>
+	</error-page>
+</web-app>

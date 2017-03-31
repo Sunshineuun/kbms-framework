@@ -1,0 +1,32 @@
+.bg {
+	background: url(../images/login/bg.jpg);
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/login/bg.jpg',sizingMethod='scale' );
+	-ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/login/bg.jpg',sizingMethod='scale' )";
+	-moz-background-size: 100% 100%;
+	background-size: 100% 100%;
+	background-repeat: repeat-x;
+}
+
+.inputLabel {
+	height: 41px;
+	width: 65px;
+	text-align: center;
+	padding-left: 10px;
+}
+
+.inputSpan {
+	height: 41px;
+	width: 220px;
+}
+
+.inputText {
+	width: 220px;
+	text-indent: 10px;
+	border: 0 none;
+	margin-top: 1px;
+}
+
+font {
+	size: 12px;
+	font-family: SimSun;
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.zeroturnaround.com"
+	xsi:schemaLocation="http://www.zeroturnaround.com http://www.zeroturnaround.com/alderaan/rebel-2_0.xsd">
+
+	<classpath>
+		<!-- -noverify -javaagent:E:\John\lib\jrebel\jrebel.jar  -->
+		<!-- 
+		<dir name="${myproject.root}/WebContent/WEB-INF/classes">
+			<exclude name="sqlmap/**"/>
+			<exclude name="test/**"/>
+		</dir> 
+		-->
+		<dirset dir="${myproject.root}/kbms/target/classes">
+			<exclude name="sqlmap/**"/>
+			<exclude name="com/winning/kbms/test/**"/>
+		</dirset>
+	</classpath>
+
+	<web>
+		<link target="/">
+			<dir name="${myproject.root}/kbms/src/main/webapp">
+			</dir>
+		</link>
+	</web>
+
+</application>  

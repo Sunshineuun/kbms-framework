@@ -1,0 +1,357 @@
+.hd {
+	display: none;
+}
+
+body {
+	color: #5F5F5F;
+	font: 12px/1.8 Tahoma, arial, 'Helvetica', sans-serif;
+	white-space: normal;
+	word-break: break-all;
+	word-wrap: break-word;
+	text-decoration: none;
+}
+
+.bodyDiv {
+	background: transparent url(../images/body_bg2-blue.png) left top
+		repeat-x;
+	background-color: #eaeaea;
+}
+
+.logo {
+	background: url(../images/logo.png) no-repeat;
+	width: 169px;
+	height: 90px;
+	margin-top: 60px;
+	float: left;
+}
+
+.container {
+	width: 800px;
+	margin-left: auto;
+	margin-right: auto;
+	
+}
+
+.txtContainer {
+	margin-top: 18px;
+	background-color: #fff;
+	padding: 20px;
+	-moz-border-radius: 8px; /* Gecko browsers */
+	-webkit-border-radius: 8px; /* Webkit browsers */
+	border-radius: 8px; /* W3C syntax */
+	min-height:400px;
+}
+
+.search {
+	float: right;
+}
+
+.searchArea {
+	background: url(../images/search.png) no-repeat;
+	width: 415px;
+	height: 49px;
+	float: left;
+	top: 49px;
+}
+
+.buttonArea {
+	position: relative;
+	background: url(../images/search-01.png) no-repeat;
+	width: 38px;
+	height: 35px;
+	left: -45px;
+	top: 7px;
+	float: left;
+	cursor: pointer;
+}
+
+.buttonArea:hover {
+	background: url(../images/search-02.png) no-repeat;
+}
+
+.clear {
+	clear: both;
+}
+
+.searchDiv {
+	margin-top: 60px;
+}
+
+.menu {
+	padding: 0;
+	margin: 0;
+}
+
+.menu li {
+	float: left;
+	list-style-type: none;
+}
+
+.menu a {
+	display: block;
+	direction: none;
+	line-height: 28px;
+	color: #606060;
+	text-decoration: none;
+	font-weight: bold;
+	font-size: 12px;
+	text-align: center;
+	width: 83px;
+	height: 28px;
+	background: url(../images/tab-2.png) no-repeat;
+}
+
+.menu a.active {
+	display: block;
+	text-decoration: none;
+	line-height: 28px;
+	font-size: 12px;
+	color: #606060;
+	font-weight: bold;
+	text-align: center;
+	width: 83px;
+	height: 28px;
+	background: url(../images/tab-1.png) no-repeat;
+}
+
+.searchTxt {
+	border: none;
+	float: left;
+	width: 330px;
+	height: 30px;
+	top: 8px;
+	left: 27px;
+	position: relative;
+}
+
+#Page {
+	float: left;
+	height: 50px;
+	font-family: Verdana;
+}
+
+#Page a {
+	float: left;
+	margin: 10px 1px 0 1px;
+	width: 36px;
+	height: 30px;
+	line-height: 30px;
+	color: #728bbe;
+	font: 12px;
+	text-align: center;
+	text-decoration: none;
+	border: 1px solid #728bbe;
+}
+
+#Page a:hover {
+	position: relative;
+	margin: 0 -10px 0 -10px;
+	padding: 0 9px;
+	width: 40px;
+	line-height: 50px;
+	height: 50px;
+	color: #000;
+	border: 1px solid #728bbe;
+	background: url() no-repeat left -10px;
+	/* 		font-size:18px; */
+	font-weight: bold;
+}
+
+#Page a.ative {
+	color: #000;
+	background: #728bbe;
+}
+
+/*
+detail
+*/
+.detail {
+	font-size: 1.1em;
+}
+
+.detail dl {
+/* 	margin-top: 20px; */
+	overflow: hidden;
+	position: relative;
+	*zoom: 1;
+}
+
+.detail dt {
+	font-size: 14px;
+	color: #3e3c6d;
+	font-weight: bold;
+	overflow: hidden;
+	*zoom: 1;
+}
+
+.detail dd {
+	margin-bottom: 25px;
+}
+
+.detail1 dt {
+	border-top: 1px solid #e3e3e3;
+	padding: 2px 0 5px 0;
+	margin-top: -3px;
+}
+
+.detail1 dt a.fr {
+	width: 22px;
+	height: 17px;
+	background-position: -413px -37px;
+	overflow: hidden;
+	margin: 5px 10px 0 0;
+}
+
+.detail1 dt a.fr.open {
+	background-position: -455px -37px;
+}
+
+.detail dd ol li {
+	list-style: decimal inside;
+}
+
+.detail dd ul li {
+	list-style: square inside;
+}
+
+.detail dd p {
+	margin: .5em 0;
+	line-height: 1.5em;
+}
+
+.detail dd ol,.detail dd ul {
+	margin: 0 0 0 1em;
+}
+
+.detail dd>ol,.detail dd>ul {
+	margin: 0 0 0 0em;
+}
+
+.backToTop {
+	width: 51px;
+	height: 51px;
+	background-color: red;
+	position: fixed;
+	right: 51px;
+	bottom: 51px;
+	z-index: 10;
+	background: url(../images/top01.gif);
+	display: none;
+	cursor: pointer;
+}
+
+.backToTop01 {
+	width: 51px;
+	height: 51px;
+	background-color: red;
+	position: fixed;
+	right: 51px;
+	bottom: 51px;
+	z-index: 10;
+	background: url(../images/top02.png);
+	display: none;
+	cursor: pointer;
+}
+
+.duanluo {
+	margin: 3px 3px;
+	width: 80%;
+	border-bottom: 1px solid #e3e3e3;
+}
+
+.duanluo h3 a {
+	color: #3E3C6D;
+	font-weight: bold;
+	margin-right: 5px;
+	text-decoration: none;
+}
+
+.duanluo h3 a,.duanluo h3 a:link,.duanluo h3 a:link,.duanluo h3 a:visited
+	{
+	color: #3E3C6D;
+	font-weight: bold;
+	margin-right: 5px;
+	text-decoration: none;
+}
+
+.duanluo h3 a:hover {
+	color: #3E3C6D;
+	font-weight: bold;
+	margin-right: 5px;
+	text-decoration: underline;
+}
+
+.indexMain {
+	position: absolute;
+	margin-left: -200px;
+	margin-top: -100px;
+	top: 50%;
+	left: 50%;
+	display: block;
+	z-index: 2000;
+}
+
+.indexBodx {
+	background-color: #728bbe;
+}
+
+.errorBody {
+	width: 100%;
+}
+
+.fontError {
+	margin-top: 100px;
+}
+
+.txtContainer .titleFont {
+	font: normal 24px/46px "Microsoft YaHei";
+/* 	padding-top: 20px; */
+/* 	padding-bottom: 20px; */
+}
+
+.drugName .drugTitle {
+	font-size: 14px;
+	color: #3e3c6d;
+	font-weight: bold;
+	overflow: hidden;
+}
+
+.centerElment {
+	background:url(../images/drug_search_404.jpg) no-repeat;
+	width:801px;
+	height:334px;
+	margin:auto;
+	margin-top:50px;
+}
+
+
+.daohang{
+	position:fixed;
+	top:180px;
+	width:200px;
+	height:25px;
+	line-height:25px;
+	text-align:center;
+	}
+.daohang li{
+	list-style-type:none;
+	background-color:#fff;
+	margin:5px;
+	height:25px;
+	}
+	
+.daohang li a{
+	text-decoration:none;
+	color:#728bbe;
+	font-weight:bold;
+	display:block;
+	background-color:#fff;
+	
+	}
+
+.daohang li a:hover{
+	text-decoration:none;
+	color:#fff;
+	display:block;
+	background-color:#728bbe;
+	}

@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.1.xsd  
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+	<context:component-scan base-package="com.winning.kbms"
+		annotation-config="true">
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+	<!-- C3P0数据库配置 -->
+	<bean id="c3p0" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="acquireIncrement" value="${c3p0.acquireIncrement}" />
+		<property name="acquireRetryAttempts" value="${c3p0.acquireRetryAttempts}" />
+		<property name="acquireRetryDelay" value="${c3p0.acquireRetryDelay}" />
+		<property name="autoCommitOnClose" value="${c3p0.autoCommitOnClose}" />
+		<!-- <property name="automaticTestTable" value="${c3p0.automaticTestTable}" 
+			/> -->
+		<property name="breakAfterAcquireFailure" value="${c3p0.breakAfterAcquireFailure}" />
+		<property name="checkoutTimeout" value="${c3p0.checkoutTimeout}" />
+		<property name="idleConnectionTestPeriod" value="${c3p0.idleConnectionTestPeriod}" />
+		<property name="initialPoolSize" value="${c3p0.initialPoolSize}" />
+		<property name="minPoolSize" value="${c3p0.minPoolSize}" />
+		<property name="maxPoolSize" value="${c3p0.maxPoolSize}" />
+		<property name="maxIdleTime" value="${c3p0.maxIdleTime}" />
+		<property name="maxStatements" value="${c3p0.maxStatements}" />
+		<property name="maxStatementsPerConnection" value="${c3p0.maxStatementsPerConnection}" />
+		<property name="numHelperThreads" value="${c3p0.numHelperThreads}" />
+		<property name="testConnectionOnCheckout" value="${c3p0.testConnectionOnCheckout}" />
+	</bean>
+
+	<!-- oracle数据库 -->
+	<bean id="targetDataSource" parent="c3p0">
+		<property name="driverClass" value="${jdbc.driverClassName}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="user" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
+		<property name="targetDataSource" ref="targetDataSource" />
+	</bean>
+
+	<!-- 事务管理器 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="pagingInterceptor" class="com.winning.mybatis.interceptor.PagingInterceptor">
+	</bean>
+
+	<bean id="sqlSessionFactory"
+		class="com.winning.mybatis.annotation.support.AnnotationSqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath*:sqlmap/**/*.xml" />
+		<property name="packagesToScan" value="com/winning/domain/kbms,com.winning.kbms.ddm.domain"></property>
+		<property name="interceptors">
+			<list>
+				<ref local="pagingInterceptor" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+
+	<bean id="dynamicSqlDao" class="com.winning.mybatis.support.DynamicSqlDaoImpl">
+		<constructor-arg index="0" ref="sqlSession"/>
+	</bean>
+	
+	<bean id="objectSession" class="com.winning.mybatis.support.ObjectSessionImpl">
+		<constructor-arg index="0" ref="sqlSession"/>
+	</bean>
+	
+	<bean id="kbmsBaseDao" class="com.winning.kbms.clinical.dao.impl.BaseWithLogDaoImpl">
+	</bean>
+
+	<!-- 连接事务的注解配置 -->
+	<tx:annotation-driven transaction-manager="transactionManager"
+		proxy-target-class="true" />
+</beans>

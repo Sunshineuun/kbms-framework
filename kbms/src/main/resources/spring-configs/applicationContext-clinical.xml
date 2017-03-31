@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.1.xsd  
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+	<bean id="cacheClassName" class="com.winning.kbms.core.cache.CacheClassName">
+		<property name="ruleClassNameAndMsgMap" ref="ruleClassNameAndMsgMap"></property>
+		<property name="logClassNameAndMsgMap" ref="clinicalClassNameAndMsgMap"></property>
+	</bean>
+	<bean id="clinicalOperLogMsgHandler"
+		class="com.winning.kbms.clinical.handlers.ClinicalOperLogMsgHandler">
+	</bean>
+
+	<bean id="clinicalBatchOperLogMsgHandler"
+		class="com.winning.kbms.clinical.handlers.ClinicalBatchOperLogMsgHandler">
+		<property name="classNameAndMsgMap" ref="clinicalClassNameAndMsgMap" />
+	</bean>
+	
+	<bean id="clinicalKnowledgeReviewHandler"
+		class="com.winning.kbms.clinical.handlers.ClinicalKnowledgeReviewHandler">
+	</bean>
+	
+	<!-- 此处定下规约：ruleClassNameAndMsgMap和classNameAndMsgMap中的key/value，
+		为对应domain类型的名称，key/value的值相同。 -->
+	<bean id="ruleClassNameAndMsgMap" class="java.util.HashMap">
+		<constructor-arg>
+			<map>
+				<entry key="RuleGenderMed" value="规则配置->药品规则->性别用药规则"></entry>
+				<entry key="RuleChildMedicine" value="规则配置->药品规则->限儿童药品"></entry>
+				
+				<entry key="RuleDrug" value="规则配置->药品规则->药品重复规则"></entry>
+				<entry key="RuleDrugItem" value="规则配置->药品规则->药品重复规则"></entry>
+				<entry key="RuleSameDrug" value="规则配置->药品规则->药品重复规则"></entry>
+				
+				<entry key="RuleDrugRepeat" value="规则配置->药品规则->药品重复规则2"></entry>
+				<entry key="RuleDrugRepeatItem" value="规则配置->药品规则->药品重复规则2"></entry>
+				<entry key="RuleSameDrugRepeat" value="规则配置->药品规则->药品重复规则2"></entry>
+				
+				<entry key="RuleOutStripDisease" value="规则配置->药品规则->超适应症"></entry>
+				<entry key="RuleOutStripCondition" value="规则配置->药品规则->超适应症"></entry>
+				
+				<entry key="RuleOutStripDiseaseRule" value="规则配置->药品规则->超适应症2"></entry>
+				<entry key="RuleOutStripConditionRule" value="规则配置->药品规则->超适应症2"></entry>
+				
+				<entry key="RuleDiseaseAntibiotics" value="规则配置->药品规则->疾病限抗生素"></entry>
+				<entry key="RuleDrugAntibiotics" value="规则配置->药品规则->疾病限抗生素"></entry>
+				
+				<!-- 中药十八反十八畏惧区分 -->
+				<entry key="RuleChineseTraditionEffct" value="规则配置->药品规则->中药十八反/中药十九畏"></entry>
+				
+				<entry key="RuleDiseaseMedicine" value="规则配置->药品规则->抗生素规则配置"></entry>
+				<entry key="RuleDiseaseMedicineMI" value="规则配置->药品规则->抗生素规则配置"></entry>
+				
+				<entry key="RuleGender" value="规则配置->诊疗项目规则->诊疗项目性别限制规则"></entry>
+				<entry key="RuleLimitChildItem" value="规则配置->诊疗项目规则->限儿童项目"></entry>
+				<entry key="RuleLab" value="规则配置->诊疗项目规则->诊疗项目频次异常"></entry>
+				<entry key="RuleVflc" value="规则配置->诊疗项目规则->诊疗项目频次异常2"></entry>
+				
+				<entry key="RuleOverDnAndTmCF" value="规则配置->诊疗项目规则->项目重复过度诊疗"></entry>
+				<entry key="RuleOverDnAndTmCFDis" value="规则配置->诊疗项目规则->项目重复过度诊疗"></entry>
+				<entry key="RuleItemRepetition" value="规则配置->诊疗项目规则->项目重复收费规则"></entry>
+				
+				<entry key="RuleItemPerform" value="规则配置->诊疗项目规则->项目关联规则"></entry>
+				<entry key="RuleItemPerformINFO" value="规则配置->诊疗项目规则->项目关联规则"></entry>
+				
+				<entry key="RuleItemRelevance" value="规则配置->诊疗项目规则->项目关联规则2"></entry>
+				<entry key="RuleItemRelevanceType" value="规则配置->诊疗项目规则->项目关联规则2"></entry>
+				<entry key="RuleItemRelevanceName" value="规则配置->诊疗项目规则->项目关联规则2"></entry>
+				
+				<entry key="RulePerform" value="规则配置->诊疗项目规则->创伤性手术限次规则"></entry>
+				
+				<entry key="RuleInspection" value="规则配置->诊疗项目规则->化验结果相关规则"></entry>
+				<entry key="RuleInspectionDrug" value="规则配置->诊疗项目规则->化验结果相关规则"></entry>
+				
+				<entry key="RuleOverDnAndTm" value="规则配置->诊疗项目规则->过度诊疗"></entry>
+				<entry key="RuleOverDnAndTmDis" value="规则配置->诊疗项目规则->项目重复过度诊疗"></entry>
+				
+				<entry key="RuleGenderMaterial" value="规则配置->材料规则->材料限性别规则"></entry>
+				
+				<entry key="RuleMaterialDdp" value="规则配置->材料规则->材料相关规则"></entry>
+				<entry key="RuleMaterialItem" value="规则配置->材料规则->材料相关规则"></entry>
+				
+				<entry key="RuleMaterialDdpTP" value="规则配置->材料规则->材料相关规则2"></entry>
+				<entry key="RuleMaterialItemTP" value="规则配置->材料规则->材料相关规则2"></entry>
+				
+				<entry key="RuleMaterialLimitDpmts" value="规则配置->材料规则->材料限科室规则（厦门）"></entry>
+				<entry key="RuleLimitDpmts" value="规则配置->材料规则->材料限科室规则（厦门）"></entry>
+				 
+				<entry key="RuleDiagnosis" value="规则配置->疾病->性别限疾病规则ICD10"></entry>
+				<entry key="RuleDiagnosisICD9" value="规则配置->疾病->性别限疾病规则ICD9"></entry>
+				<entry key="RuleDiseaseLimitAge" value="规则配置->疾病->诊断与年龄不符"></entry>
+				<entry key="RuleDiseaseLimitCode" value="规则配置->疾病->诊断与年龄不符"></entry>
+				
+				<entry key="RuleSingleDiseaseSC" value="规则配置->疾病->单病种必须流程筛查"></entry>
+				<entry key="RuleSingleDiseaseND" value="规则配置->疾病->单病种必须流程筛查"></entry>
+				
+				<entry key="RuleSingleDiseaseWGSC" value="规则配置->疾病->单病种无关项目筛查"></entry>
+				<entry key="RuleSingleDiseaseWGND" value="规则配置->疾病->单病种无关项目筛查"></entry>
+				
+				<entry key="RuleHospitalzedExpn" value="规则配置->疾病->住院行为异常规则"></entry>
+				<entry key="RuleDrugCorrelation" value="规则配置->单病种知识->药品相关度规则"></entry>
+				<entry key="RuleLabCorrelation" value="规则配置->单病种知识->诊疗项目相关度规则"></entry>
+				<entry key="RuleMaterialCorrelation" value="规则配置->单病种知识->医用材料相关度规则"></entry>
+				<entry key="RuleDiseaseEvent" value="规则配置->单病种知识->单病种事件规则"></entry>
+				<entry key="RuleDiseaseItem" value="规则配置->单病种知识->单病种事件规则"></entry>
+				
+				<entry key="DrugEqGroup" value="规则配置->单病种知识->剂型等同配置"></entry>
+				<entry key="DrugEqForm" value="规则配置->单病种知识->剂型等同配置"></entry>				
+				<entry key="DrugEqSmallGeneric" value="规则配置->单病种知识->小通用名等同配置"></entry>
+				
+				<entry key="DrugInstructions" value="规则配置->药品说明书规则->药品规则配置"></entry>
+				<entry key="DrugDosage" value="规则配置->药品说明书规则->药品规则配置->药品用量配置"></entry>
+				<!-- 南京版本的药品规则配置用的数据就是【原药品规则配置】，而且南京版本的药品规则配置，没有新增改 -->
+				<entry key="DrugIndications" value="规则配置->药品说明书规则->药品规则配置->药品适应的症状和疾病"></entry>
+				<entry key="DrugTaboo" value="规则配置->药品说明书规则->药品规则配置->禁忌"></entry>
+				<entry key="DrugPregnant" value="规则配置->药品说明书规则->药品规则配置->孕妇及哺乳期妇女用药"></entry>
+				<entry key="DrugChild" value="规则配置->药品说明书规则->药品规则配置->儿童用药禁忌"></entry>
+				<entry key="DrugOldpeople" value="规则配置->药品说明书规则->药品规则配置->老年人用药"></entry>
+				<entry key="DrugEffect" value="规则配置->药品说明书规则->药品规则配置->药品相互作用"></entry>
+				<entry key="DrugDosageNj" value="规则配置->药品说明书规则->药品规则配置-南京版->药品用量配置"></entry>
+				<entry key="RuleLimitElement" value="规则配置->限制用药规则->规则限定元素配置"></entry>
+				<entry key="RuleLimitCondition" value="规则配置->限制用药规则->规则限定元素配置"></entry>
+				<entry key="RuleItemDMJF" value="规则配置->其他->毒麻精放药品规则"></entry>
+				<entry key="RuleOutStripDiseaseElementS" value="规则配置->其他->疾病判断库"></entry>
+				<entry key="RuleOutStripDiseaseElementX" value="规则配置->其他->疾病判断库"></entry>
+				<entry key="RuleLimitChildItem2012" value="规则配置-2012版->限儿童项目"></entry>
+				<entry key="RuleGender2012" value="规则配置-2012版->限性别项目"></entry>
+				<entry key="VflcAbnFre" value="规则配置-2012版->诊疗项目频次异常"></entry>
+			</map>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="clinicalClassNameAndMsgMap" class="java.util.HashMap">
+		<constructor-arg>
+			<map>
+				<!--新增2016年8月3日11:25:43-->
+				<entry key="RuleSingleDiseaseSC" value="RuleSingleDiseaseSC"></entry>
+				<entry key="RuleSingleDiseaseND" value="RuleSingleDiseaseND"></entry>
+				<entry key="RuleSingleDiseaseWGSC" value="RuleSingleDiseaseWGSC"></entry>
+				<entry key="RuleSingleDiseaseWGND" value="RuleSingleDiseaseWGND"></entry>
+				<entry key="RuleChineseTraditionEffct" value="RuleChineseTraditionEffct"></entry>
+				<entry key="DrugInstructions" value="DrugInstructions"></entry>
+				<entry key="DrugDosage" value="DrugDosage"></entry>
+				<entry key="DrugIndications" value="DrugIndications"></entry>
+				<entry key="DrugTaboo" value="DrugTaboo"></entry>
+				<entry key="DrugPregnant" value="DrugPregnant"></entry>
+				<entry key="DrugChild" value="DrugChild"></entry>
+				<entry key="DrugOldpeople" value="DrugOldpeople"></entry>
+				<entry key="DrugEffect" value="DrugEffect"></entry>
+				<entry key="RuleGenderMed" value="RuleGenderMed"></entry>
+				<entry key="RuleGender" value="RuleGender"></entry>
+				<entry key="RuleDiagnosis" value="RuleDiagnosis"></entry>
+				<entry key="RuleDiagnosisICD9" value="RuleDiagnosisICD9"></entry>
+				<entry key="RuleGenderMaterial" value="RuleGenderMaterial"></entry>
+				<entry key="RuleLimitElement" value="RuleLimitElement"></entry>
+				<entry key="RuleLimitCondition" value="RuleLimitCondition"></entry>
+				<!--规则限定元素配置  组合使用  不记录日志-->
+				<!--  <entry key="RuleLimitElementMtUse" value="RuleLimitElementMtUse"></entry> -->
+				<entry key="RuleDiseaseLimitAge" value="RuleDiseaseLimitAge"></entry>
+				<entry key="RuleDiseaseLimitCode" value="RuleDiseaseLimitCode"></entry>
+				<entry key="RuleDrug" value="RuleDrug"></entry>
+				<entry key="RuleDrugItem" value="RuleDrugItem"></entry>
+				<entry key="RuleSameDrug" value="RuleSameDrug"></entry>
+				<entry key="RuleDrugRepeat" value="RuleDrugRepeat"></entry>
+				<entry key="RuleDrugRepeatItem" value="RuleDrugRepeatItem"></entry>
+				<entry key="RuleSameDrugRepeat" value="RuleSameDrugRepeat"></entry>
+				<entry key="RuleLab" value="RuleLab"></entry>
+				<entry key="RuleOverDnAndTmCF" value="RuleOverDnAndTmCF"></entry>
+				<entry key="RuleOverDnAndTmCFDis" value="RuleOverDnAndTmCFDis"></entry>
+				<entry key="RuleItemRepetition" value="RuleItemRepetition"></entry>
+				<entry key="RuleHospitalzedExpn" value="RuleHospitalzedExpn"></entry>
+				<entry key="RuleLimitChildItem" value="RuleLimitChildItem"></entry>
+				<entry key="RuleChildMedicine" value="RuleChildMedicine"></entry>
+				<entry key="RuleDiseaseMedicine" value="RuleDiseaseMedicine"></entry>
+				<entry key="RuleDiseaseMedicineMI" value="RuleDiseaseMedicineMI"></entry>
+				<entry key="RuleDiseaseMedicineDZ" value="RuleDiseaseMedicineDZ"></entry>
+				<entry key="RuleMaterialDdp" value="RuleMaterialDdp"></entry>
+				<entry key="RuleMaterialDdpTP" value="RuleMaterialDdpTP"></entry>
+				<entry key="RuleItemPerform" value="RuleItemPerform"></entry>
+				<entry key="RuleItemPerformINFO" value="RuleItemPerformINFO"></entry>
+				<entry key="RuleDiseaseAntibiotics" value="RuleDrugAntibiotics"></entry>
+				<entry key="RuleDrugAntibiotics" value="RuleDrugAntibiotics"></entry>
+				<entry key="RulePerform" value="RulePerform"></entry>
+				<entry key="RuleOutStripDisease" value="RuleOutStripDisease"></entry>
+				<entry key="RuleOutStripCondition" value="RuleOutStripCondition"></entry>
+				<entry key="RuleOutStripDiseaseElementS" value="RuleOutStripDiseaseElementS"></entry>
+				<entry key="RuleOutStripDiseaseElementX" value="RuleOutStripDiseaseElementX"></entry>
+				<entry key="RuleOverDnAndTm" value="RuleOverDnAndTm"></entry>
+				<entry key="RuleOverDnAndTmDis" value="RuleOverDnAndTmDis"></entry>
+				<entry key="RuleOutStripDiseaseRule" value="RuleOutStripDiseaseRule"></entry>
+				<entry key="RuleOutStripConditionRule" value="RuleOutStripConditionRule"></entry>
+				<entry key="RuleInspection" value="RuleInspection"></entry>
+				<entry key="RuleInspectionDrug" value="RuleInspectionDrug"></entry>
+				<entry key="DrugTradNameInstructions" value="DrugTradNameInstructions"></entry>
+				<entry key="DrugChildDT" value="DrugChildDT"></entry>
+				<entry key="DrugDosageDT" value="DrugDosageDT"></entry>
+				<entry key="DrugEffectDT" value="DrugEffectDT"></entry>
+				<entry key="DrugIndicationsDT" value="DrugIndicationsDT"></entry>
+				<entry key="DrugOldpeopleDT" value="DrugOldpeopleDT"></entry>
+				<entry key="DrugPregnantDT" value="DrugPregnantDT"></entry>
+				<entry key="DrugTabooDT" value="DrugTabooDT"></entry>
+				<!--结束2016年8月9日10:10:25-->
+				<entry key="StaCode" value="StaCode"></entry>
+				<entry key="DrugStdConfig" value="StaCode"></entry>
+				<entry key="DgPrjStd" value="StaCode"></entry>
+				<entry key="DrugFctCategory" value="DrugFctCategory"></entry>
+				<entry key="DrugFctCategorySubitem" value="DrugFctCategorySubitem"></entry>
+				<entry key="DrugBigGeneric" value="DrugBigGeneric"></entry>
+				<entry key="DrugSmallGeneric" value="DrugSmallGeneric"></entry>
+				<entry key="DrugBigGenericAndForm" value="DrugBigGenericAndForm"></entry>
+				<entry key="DrugChinese" value="DrugChinese"></entry>
+				<entry key="DrugList" value="DrugList"></entry>
+				<entry key="AdjuvantDrug" value="AdjuvantDrug"></entry>
+				<entry key="DrugStandardName" value="DrugStandardName"></entry>
+				<entry key="DrugStandardNameChild" value="DrugStandardNameChild"></entry>
+				<entry key="VflcFctCategory" value="VflcFctCategory"></entry>
+				<entry key="VflcFctCategorySubitem" value="VflcFctCategorySubitem"></entry>
+				<entry key="InspectionInfection" value="InspectionInfection"></entry>
+				<entry key="InspectionBleed" value="InspectionBleed"></entry>
+				<entry key="DiadynamicCrs" value="DiadynamicCrs"></entry>
+				<entry key="DiagnosisIndex" value="DiagnosisIndex"></entry>
+				<entry key="DrugCategory" value="DrugCategory"></entry>
+				<entry key="DrugCategoryAndBigGenericRelation" value="DrugCategoryAndBigGenericRelation"></entry>
+				<entry key="DrugForm" value="DrugForm"></entry>
+				<entry key="DrugFormGroup" value="DrugFormGroup"></entry>
+				<entry key="DrugFormGroupInfo" value="DrugFormGroupInfo"></entry>
+				<!--2016年8月10日17:57:57-->
+				<entry key="Disease" value="Disease"></entry>
+				<entry key="ICD10" value="ICD10"></entry>
+				<entry key="DiagnosisDatum" value="DiagnosisDatum"></entry>
+				<entry key="DiagnosisDatumDetail" value="DiagnosisDatumDetail"></entry>
+				<entry key="DrugStandardIcd10" value="DrugStandardIcd10"></entry>
+				<entry key="DrugStandardIcd10BJ" value="DrugStandardIcd10BJ"></entry>
+				<entry key="DrugStandardIcd9" value="DrugStandardIcd9"></entry>
+				<entry key="Material" value="Material"></entry>
+				<entry key="StandardMaterial2" value="StandardMaterial2"></entry>
+				<entry key="RuleDiseaseEvent" value="RuleDiseaseEvent"></entry>
+				<entry key="RuleDiseaseItem" value="RuleDiseaseItem"></entry>
+				<entry key="RuleDrugCorrelation" value="RuleDrugCorrelation"></entry>
+				<entry key="RuleLabCorrelation" value="RuleLabCorrelation"></entry>
+				<entry key="RuleMaterialCorrelation" value="RuleMaterialCorrelation"></entry>
+				<!--2016年8月10日10:10:46-->
+				<entry key="DrugFromSX" value="DrugFromSX"></entry>
+				<!--2016年11月15日项目关联规则2-->
+				<entry key="RuleItemRelevance" value="RuleItemRelevance"></entry>
+				<entry key="RuleItemRelevanceType" value="RuleItemRelevanceType"></entry>
+				<entry key="RuleItemRelevanceName" value="RuleItemRelevanceName"></entry>
+				<!--2016年11月15日材料相关规则2科室/疾病/手术信息-->
+				<entry key="RuleMaterialItemTP" value="RuleMaterialItemTP"></entry>
+				<!-- 2016年12月20日中药库日志记录 -->
+				<entry key="ChineseDrugCategory" value="ChineseDrugCategory"></entry>
+				<entry key="RuleGender2012" value="RuleGender2012"></entry>
+				<entry key="VflcAbnFre" value="VflcAbnFre"></entry>
+				<entry key="RuleLimitChildItem2012" value="RuleLimitChildItem2012"></entry>
+				<!-- 2017年1月16日药品规则配置-外网日志记录 -->
+				<entry key="DrugInstructionsCopy" value="DrugInstructionsCopy"></entry>
+				<entry key="DrugDosageCopy" value="DrugDosageCopy"></entry>
+				<entry key="DrugIndicationsCopy" value="DrugIndicationsCopy"></entry>
+				<entry key="DrugTabooCopy" value="DrugTabooCopy"></entry>
+				<entry key="DrugPregnantCopy" value="DrugPregnantCopy"></entry>
+				<entry key="DrugChildCopy" value="DrugChildCopy"></entry>
+				<entry key="DrugOldpeopleCopy" value="DrugOldpeopleCopy"></entry>
+				<entry key="DrugEffectCopy" value="DrugEffectCopy"></entry>
+				<entry key="DrugSocialInsurance" value="DrugSocialInsurance"></entry>
+				<entry key="DrugDosageNj" value="DrugDosageNj"></entry>
+			</map>
+		</constructor-arg>
+	</bean>
+</beans>

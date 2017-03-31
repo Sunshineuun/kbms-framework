@@ -1,0 +1,143 @@
+.table_add {
+	background-image: url(../images/icons/user_add.png);
+}
+
+.table_edit {
+	background-image: url(../images/icons/user_edit.png);
+}
+
+.table_delete {
+	background-image: url(../images/icons/user_delete.png);
+}
+
+.user {
+	background-image: url(../images/icons/user.png);
+}
+
+.search {
+	background-image: url(../images/icons/zoom.png);
+}
+
+.settings {
+	background-image: url(../images/icons/folder_wrench.png);
+}
+
+.folder_go {
+	background-image: url(../images/icons/folder_go.png);
+}
+
+.application_go {
+	background-image: url(../images/icons/application_go.png);
+}
+
+.info {
+	background-image: url(../images/icons/information.png);
+}
+
+.home {
+	background-image: url(../images/icons/application_home.png);
+}
+
+.add {
+	background-image: url(../images/icons/add.png);
+}
+
+.edit {
+	background-image: url(../images/icons/edit.png);
+}
+
+.delete {
+	background-image: url(../images/icons/delete.png);
+}
+
+.error {
+	background-image: url(../images/icons/error.png);
+}
+
+.cog {
+	background-image: url(../images/icons/cog.png);
+}
+
+.cog_go {
+	background-image: url(../images/icons/cog_go.png);
+}
+
+.cut {
+	background-image: url(../images/icons/cut.png);
+}
+
+.text_signature {
+	background-image: url(../images/icons/text_signature.png);
+}
+
+.paste {
+	background-image: url(../images/icons/page_paste.png);
+}
+
+.table {
+	background-image: url(../images/icons/table.png);
+}
+
+.copy {
+	background-image: url(../images/icons/page_copy.png);
+}
+
+.accept {
+	background-image: url(../images/icons/accept.png);
+}
+
+.refresh {
+	background-image: url(../images/icons/arrow_refresh.png);
+}
+
+.tree {
+	background-image: url(../images/icons/tree.png);
+}
+
+.link_go {
+	background-image: url(../images/icons/link_go.png);
+}
+
+.plugin_link {
+	background-image: url(../images/icons/plugin_link.png);
+}
+
+.key {
+	background-image: url(../images/icons/key.png);
+}
+
+.lock {
+	background-image: url(../images/icons/lock.png);
+}
+
+.picture_save {
+	background-image: url(../images/icons/picture_save.png);
+}
+
+.monitor {
+	background-image: url(../images/icons/monitor.png);
+}
+
+.view-fullscreen {
+	background-image: url(../images/icons/view-fullscreen.png);
+}
+
+.view-restore {
+	background-image: url(../images/icons/view-restore.png);
+}
+
+.page_excel {
+	background-image: url(../images/icons/page_excel.png);
+}
+
+.tick {
+	background-image: url(../images/icons/tick.png);
+}
+
+.database_edit {
+	background-image: url(../images/icons/database_edit.png);
+}
+
+.control_play_blue {
+	background-image: url(../images/icons/control_play_blue.png);
+}
