@@ -61,3 +61,25 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+
+# 自定义不提交的文件及其文件夹
+
+#文件夹
+.settings/
+target/
+.metadata/
+.recommenders/
+clinical_pathway/
+webapp/resources/
+RemoteSystemsTempFiles/
+Servers/
+extjs4/
+#文件
+.classpath
+.project
+.jar
+.springBeans
+.html
+.zip
+.excel
