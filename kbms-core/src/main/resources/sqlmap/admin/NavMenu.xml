@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "C:/dev/xsd/mybatis-3-mapper.dtd" >
+<mapper namespace="NavMenuMapper">
+	<select id="getAllNavMenuChildrenById" resultMap="DefaultMapper.NavMenuMap">
+		SELECT *
+		  FROM (SELECT ID,
+		               DECODE(MODEL_ID, '0', NAME, NAME || '(' || MODEL_ID || ')') NAME,
+		               LEAF,
+		               EXPANDED,
+		               ORDER_FLAG,
+		               URL,
+		               PARENT_ID,
+		               ICON_CLS,
+		               AUTH_CODE,
+		               TYPE,
+		               VIEW_FLAG
+		          FROM KBMS_NAV_MENU)
+		 START WITH PARENT_ID = #{id,jdbcType=VARCHAR}
+		CONNECT BY PRIOR ID = PARENT_ID
+		 ORDER SIBLINGS BY ORDER_FLAG
+	</select>
+	<select id="getNavMeunFunWithUserAuth" parameterType="hashmap"
+		resultMap="DefaultMapper.NavMenuMap">
+			SELECT T1.*, DECODE(T2.USER_NAME, '', T2.USER_NAME, '1') IS_CHECK
+			  FROM (SELECT ID,
+			               DECODE(MODEL_ID, '0', NAME, NAME || '(' || MODEL_ID || ')') NAME,
+			               LEAF,
+			               EXPANDED,
+			               ORDER_FLAG,
+			               URL,
+			               PARENT_ID,
+			               ICON_CLS,
+			               AUTH_CODE,
+			               TYPE,
+			               VIEW_FLAG
+			          FROM KBMS_NAV_MENU) T1
+			  LEFT JOIN KBMS_USER_AUTHORITY T2
+			    ON T1.ID = T2.MENU_ID
+			   AND T2.USER_NAME = #{username, jdbcType=VARCHAR}
+			 ORDER BY T1.ORDER_FLAG
+	</select>
+	<select id="getNavMenuChildrenByIdWithAuth" resultMap="DefaultMapper.NavMenuMap">
+		SELECT *
+		  FROM (SELECT T.*
+		          FROM (SELECT ID,
+		                       DECODE(MODEL_ID,
+		                              '0',
+		                              NAME,
+		                              NAME || '(' || MODEL_ID || ')') NAME,
+		                       LEAF,
+		                       EXPANDED,
+		                       ORDER_FLAG,
+		                       URL,
+		                       PARENT_ID,
+		                       ICON_CLS,
+		                       AUTH_CODE,
+		                       TYPE,
+		                       VIEW_FLAG
+		                  FROM KBMS_NAV_MENU) T
+		         WHERE TYPE = 1
+		           AND VIEW_FLAG = 1
+		           AND (T.ID IN
+		               (SELECT MENU_ID
+		                   FROM KBMS_USER_AUTHORITY
+		                  WHERE USER_NAME = #{userName, jdbcType=VARCHAR}) OR
+		               T.ID IN
+		               (SELECT MENU_ID
+		                   FROM KBMS_ROLE_AUTHORITY
+		                  WHERE ROLE_ID IN (SELECT ROLE_ID
+		                                      FROM KBMS_USER_ROLE TT1, KBMS_ROLE TT2
+		                                     WHERE TT1.USER_NAME = #{userName,
+		                                     jdbcType=VARCHAR}
+		                                       AND TT2.ENABLE = 1))))
+		 WHERE PARENT_ID = #{id, jdbcType=VARCHAR}
+		 ORDER BY ORDER_FLAG
+	</select>
+	<select id="getAllNavMenuChildrenByIdWithAuth" resultMap="DefaultMapper.NavMenuMap">
+		 SELECT *
+		   FROM (SELECT T.*
+		           FROM (SELECT ID,
+		                        DECODE(MODEL_ID,
+		                               '0',
+		                               NAME,
+		                               NAME || '(' || MODEL_ID || ')') NAME,
+		                        LEAF,
+		                        EXPANDED,
+		                        ORDER_FLAG,
+		                        URL,
+		                        PARENT_ID,
+		                        ICON_CLS,
+		                        AUTH_CODE,
+		                        TYPE,
+		                        VIEW_FLAG
+		                   FROM KBMS_NAV_MENU) T
+		          WHERE TYPE = 1
+		            AND VIEW_FLAG = 1
+		            AND (T.ID IN
+		                (SELECT MENU_ID
+		                    FROM KBMS_USER_AUTHORITY
+		                   WHERE USER_NAME = #{userName, jdbcType=VARCHAR}) OR
+		                T.ID IN
+		                (SELECT MENU_ID
+		                    FROM KBMS_ROLE_AUTHORITY
+		                   WHERE ROLE_ID IN (SELECT ROLE_ID
+		                                       FROM KBMS_USER_ROLE TT1, KBMS_ROLE TT2
+		                                      WHERE TT1.USER_NAME = #{userName, jdbcType=VARCHAR}
+		                                        AND TT2.ENABLE = 1))))
+		  ORDER BY ORDER_FLAG
+	</select>
+	<select id="getNavMeunFunWithRoleAuth" parameterType="hashmap"
+		resultMap="DefaultMapper.NavMenuMap">
+		SELECT T1.*, DECODE(T2.ROLE_ID, '', T2.ROLE_ID, '1') IS_CHECK
+		  FROM (SELECT ID,
+		               DECODE(MODEL_ID, '0', NAME, NAME || '(' || MODEL_ID || ')') NAME,
+		               LEAF,
+		               EXPANDED,
+		               ORDER_FLAG,
+		               URL,
+		               PARENT_ID,
+		               ICON_CLS,
+		               AUTH_CODE,
+		               TYPE,
+		               VIEW_FLAG
+		          FROM KBMS_NAV_MENU) T1
+		  LEFT JOIN KBMS_ROLE_AUTHORITY T2
+		    ON T1.ID = T2.MENU_ID
+		   AND T2.ROLE_ID = #{roleId,jdbcType=VARCHAR}
+		 ORDER BY T1.ORDER_FLAG
+
+	</select>
+	<select id="cutNavMenu" parameterType="hashmap">
+		update kbms_nav_menu set
+		parent_id = #{parentId,jdbcType=VARCHAR} where
+		id=#{id,jdbcType=VARCHAR}
+	</select>
+</mapper>

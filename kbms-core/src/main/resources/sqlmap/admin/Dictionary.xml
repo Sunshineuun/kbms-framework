@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="DictionaryMapper">
+	
+	<!-- 数据字典根据字典代码查询具体值 -->
+	<select id="getDictionaryByTypeCode" parameterType="java.lang.String"
+		resultType="hashmap">
+		select t2.value VALUE,t2.name LABEL from
+		kbms_dictionary_type t1,kbms_dictionary t2
+		where
+		t1.type_code=t2.type_code and t1.enable='1' and
+		t2.type_code=#{typeCode,jdbcType=VARCHAR} order by view_order
+	</select>
+	<select id="searchBZJX" parameterType="hashmap" resultType="hashmap">
+		select DRUG_FORM_NAME
+		LABEL,DRUG_FORM_CODE
+		VALUE from
+		kbms_drug_form
+		where
+		length(drug_form_code) = 2
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and (DRUG_FORM_CODE like concat(concat('%',#{searchParam}),'%')
+			or DRUG_FORM_NAME like concat(concat('%',#{searchParam}),'%')) 
+		</if>
+		order by label
+	</select>
+	<select id="searchFullBZJX" parameterType="hashmap" resultType="hashmap">
+		select DRUG_FORM_NAME ||'['||DRUG_FORM_CODE||']'
+		LABEL,DRUG_FORM_CODE
+		VALUE from
+		kbms_drug_form
+		where
+		length(drug_form_code) = 2
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and (DRUG_FORM_CODE like concat(concat('%',#{searchParam}),'%')
+			or DRUG_FORM_NAME like concat(concat('%',#{searchParam}),'%')) 
+		</if>
+		order by label
+	</select>
+	<select id="searchSJJX" parameterType="hashmap" resultType="hashmap">
+		select DRUG_FORM_NAME
+		LABEL,DRUG_FORM_CODE
+		VALUE from
+		kbms_drug_form
+		where
+		length(drug_form_code) > 2
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and (DRUG_FORM_CODE like concat(concat('%',#{searchParam}),'%')
+			or DRUG_FORM_NAME like concat(concat('%',#{searchParam}),'%')) 
+		</if>
+		order by label
+	</select>
+	<!-- 实际剂型查询 -->
+	<select id="searchFullSJJX" parameterType="hashmap" resultType="hashmap">
+		select DRUG_FORM_NAME ||'['||DRUG_FORM_CODE||']'
+		LABEL,DRUG_FORM_CODE
+		VALUE from
+		kbms_drug_form
+		where
+		length(drug_form_code) > 2
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and (DRUG_FORM_CODE like concat(concat('%',#{searchParam}),'%')
+			or DRUG_FORM_NAME like concat(concat('%',#{searchParam}),'%')) 
+		</if>
+		order by label
+	</select>
+	<!-- 性别用药剂型数据字典查询 -->
+	<select id="searchFullSexSJJX" parameterType="hashmap" resultType="hashmap">
+		select max(label) label, max(value) value from (select t3.small_generic_name,
+               t3.big_generic_name,
+               t3.small_id small_id,
+               case when t4.drug_form_name is null then '' else
+               t4.drug_form_name || '[' || t4.DRUG_FORM_CODE || ']' end LABEL,
+               t4.DRUG_FORM_CODE VALUE
+          from (select t1.small_generic_name,
+                       t1.id,
+                       t1.big_generic_name,
+                       t2.actual_form_code,
+                       t1.small_id
+                  from (select s.small_generic_name,s.id small_id,
+                               b.id id,
+                               b.big_generic_name
+                          from kbms_drug_small_generic s
+                          left join kbms_drug_big_generic b
+                            on s.big_generic_id = b.id) t1
+                  left join KBMS_DRUG_BIG_GENERIC_FORM t2
+                    on t1.id = t2.big_generic_id) t3
+          left join KBMS_DRUG_FORM t4
+            on t3.actual_form_code = t4.drug_form_code  ) t 
+		 where 1=1
+	  <if test="bigGenericName != 'all' and bigGenericName != '' and bigGenericName != null">
+			and small_id = #{bigGenericName}
+	    </if>
+	    <if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and	(t.label like concat(concat('%',#{searchParam}),'%')
+			or
+			(t.value like concat(concat('%',#{searchParam}),'%'))) 
+		</if>
+		group by label
+	</select>
+	<!-- 07版诊疗项目查找，项目名称和项目编码 -->
+	<select id="searchFullVflc" parameterType="hashmap" resultType="hashmap">
+		select t.item_name ||'['||t.price_code||']' LABEL,
+		t.id VALUE
+		from kbms_vflc_items t
+		where 1=1
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and	(t.item_name like concat(concat('%',#{searchParam}),'%')
+			or
+			t.id = #{searchParam} 
+			or 
+			(t.price_code like concat(concat('%',#{searchParam}),'%'))) 
+		</if>
+		order by label
+	</select>
+	<!-- 12版诊疗项目查找，项目名称和项目编码 -->
+	<select id="searchFullVflc2012" parameterType="hashmap" resultType="hashmap">
+		select t.item_name ||'['||t.item_code||']' LABEL,
+		t.id VALUE
+		from kbms_vflc_items_2012 t
+		where 1=1
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and	(t.item_name like concat(concat('%',#{searchParam}),'%')
+			or
+			t.id = #{searchParam} 
+			or 
+			(t.item_code like concat(concat('%',#{searchParam}),'%'))) 
+		</if>
+		order by label
+	</select>
+	<select id="searchFullVflcs" parameterType="hashmap" resultType="hashmap">
+		select t.item_name ||'['||t.price_code||']' LABEL,
+		t.item_name VALUE
+		from kbms_vflc_items t
+		where 1=1
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and	(t.item_name like concat(concat('%',#{searchParam}),'%')
+			or
+			t.id = #{searchParam} 
+			or 
+			(t.price_code like concat(concat('%',#{searchParam}),'%'))) 
+		</if>
+		order by label
+	</select>
+	<select id="searchFullMaterial" parameterType="hashmap" resultType="hashmap">
+		select t.material_name ||'['||t.price_code||']'
+		LABEL,t.id
+		VALUE from
+		kbms_material t
+		where 1=1
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+		and	(t.material_name like concat(concat('%',#{searchParam}),'%')
+			or
+			t.id = #{searchParam}) 
+		</if>
+		order by label
+	</select>
+	<select id="selectDisease" parameterType="hashmap" resultType="hashmap">
+		SELECT DISEASE_NAME LABEL,ID VALUE FROM kbms_disease
+	</select>
+	<select id="selectRole" parameterType="hashmap" resultType="hashmap">
+		select role_name LABEL,id VALUE from kbms_role where enable = 1
+	</select>
+	
+	<select id="selectDrugTermSource" parameterType="hashmap"
+		resultType="hashmap">
+		SELECT source LABEL,source VALUE FROM kbms_term_out_primary_drug t
+		group by source
+	</select>
+	<select id="selectVflcItemTermSource" parameterType="hashmap"
+		resultType="hashmap">
+		SELECT NAME LABEL,NAME VALUE FROM KBMS_VFLC_ITEM_MAPPING_CONFIG
+	</select>
+	<select id="selectChineseDrugTermSource" parameterType="hashmap"
+		resultType="hashmap">
+		SELECT source LABEL,source VALUE FROM
+		kbms_out_primary_chinese_drug t
+		group by source
+	</select>
+	<!-- 材料相关规则和材料相关规则2中，科室类型查询。 -->
+	<select id="searchLimitDpmts" parameterType="hashmap"
+		resultType="hashmap">
+		select limit_element_name LABEL,limit_element_code VALUE from kbms_rule_limit_element
+		where LIMIT_TYPE='1'
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and limit_element_name like
+			concat(concat('%',#{searchParam}),'%')
+		</if>
+	</select>
+	<select id="searchLimitDpmtsByID" parameterType="hashmap"
+		resultType="hashmap">
+		select limit_element_name LABEL,id VALUE from kbms_rule_limit_element
+		where LIMIT_TYPE='1'
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and limit_element_name like
+			concat(concat('%',#{searchParam}),'%')
+		</if>
+	</select>
+	<select id="searchDrugCategory" parameterType="hashmap"
+		resultType="hashmap">
+		select id VALUE,category_name LABEL from kbms_drug_category
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			where pinyin_code like concat(concat('%',#{searchParam}),'%') or
+			category_name like concat(concat('%',#{searchParam}),'%') or
+			id =
+			#{searchParam}
+		</if>
+	</select>
+	<select id="searchDrugGenericNameWithCategory" parameterType="hashmap"
+		resultType="hashmap">
+		select t1.id VALUE,t1.big_generic_name LABEL from
+		kbms_drug_big_generic
+		t1,kbms_drug_category
+		t2,kbms_drug_category_big_generic t3 where
+		t1.id =
+		t3.big_generic_id
+		and
+		t2.id = t3.category_id
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and (t1.pinyin_code like concat(concat('%',#{searchParam}),'%')
+			or
+			t1.big_generic_name like concat(concat('%',#{searchParam}),'%')
+			or
+			t1.id
+			= #{searchParam}
+			)
+		</if>
+		<if test="drugCategoryId != '' and drugCategoryId != null">
+			and t2.code like
+			concat(concat('%',#{drugCategoryId}),'|%')
+		</if>
+	</select>
+	<select id="searchDrugGenericName" parameterType="hashmap"
+		resultType="hashmap">
+		select id VALUE,big_generic_name LABEL from kbms_drug_big_generic
+		where
+		1=1
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and (pinyin_code like concat(concat('%',#{searchParam}),'%')
+			or
+			big_generic_name like concat(concat('%',#{searchParam}),'%')
+			or
+			id =
+			#{searchParam}
+			)
+		</if>
+		<if test="drugType != '' and drugType != null">
+			and DRUG_TYPE = #{drugType}
+		</if>
+	</select>
+	<!-- <select id="searchDrugGenericNameDrugForm" parameterType="hashmap" 
+		resultType="hashmap"> select t1.drug_form_code VALUE,t1.drug_form_name ||'['||t1.drug_form_code||']' 
+		LABEL from kbms_drug_form t1, kbms_drug_big_generic t2, kbms_drug_big_generic_form 
+		t3 where t1.drug_form_code = t3.actual_form_code and t2.id=t3.big_generic_id 
+		<if test="searchParam != 'all' and searchParam != '' and searchParam != null"> 
+		and t1.drug_form_code = #{searchParam} </if> <if test="drugGenericNameId 
+		!= '' and drugGenericNameId != null"> and big_generic_id = #{drugGenericNameId} 
+		</if> </select> -->
+	<select id="searchDrugSmallGenericName" parameterType="hashmap"
+		resultType="hashmap">
+		select id VALUE,small_generic_name LABEL from kbms_drug_small_generic
+		where
+		1=1
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and (
+			small_generic_name like
+			concat(concat('%',#{searchParam}),'%')
+			or
+			id =
+			#{searchParam}
+			)  
+		</if>
+		order by label
+	</select>
+	<select id="selectTermBatchNo" parameterType="hashmap"
+		resultType="hashmap">
+		select batch_no LABEL,batch_no VALUE from kbms_term_mapping
+		group by batch_no
+	</select>
+	<select id="searchDrugInstructions" parameterType="hashmap"
+		resultType="hashmap">
+		select product_name LABEL,id VALUE from kbms_drug_instructions where
+		1=1
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and (product_name like concat(concat('%',#{searchParam}),'%')
+			or
+			id =
+			#{searchParam}
+			)  
+		</if>
+		order by label
+	</select>
+	<select id="selectTermOutPrimaryDrugSource" parameterType="hashmap"
+		resultType="hashmap">
+		select name LABEL,name VALUE from
+		KBMS_DRUG_MAPPING_CONFIG
+		group by name
+	</select>
+	<select id="selectTermOutPrimaryVflcSource" parameterType="hashmap"
+		resultType="hashmap">
+		select source LABEL,source VALUE from
+		kbms_term_out_primary_vflc
+		group by source
+	</select>
+	<select id="selectMaterialTermSource" parameterType="hashmap"
+		resultType="hashmap">
+		select source LABEL,source VALUE from
+		kbms_out_primary_material
+		group by source
+	</select>
+	<select id="selectLimitElement" parameterType="hashmap"
+		resultType="hashmap">
+		SELECT LIMIT_ELEMENT_NAME LABEL,ID VALUE from
+		Kbms_Rule_Limit_Element
+	</select>
+	<select id="selectRuleDiseaseEvent" parameterType="hashmap"
+		resultType="hashmap">
+		select EVENT_NAME LABEL,ID VALUE from
+		kbms_rule_disease_event
+	</select>
+	<select id="selectDrugStandardNameName" parameterType="hashmap" resultType="hashmap">
+		select NAME LABEL,ID VALUE from kbms_drug_standard_name 
+		where 1 = 1
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and (name like
+			concat(concat('%',#{searchParam}),'%') or id = #{searchParam} )  
+		</if>
+		order by label
+	</select>
+	<select id="selectEqGroup" parameterType="hashmap"
+		resultType="hashmap">
+		SELECT NAME LABEL,ID VALUE from kbms_drug_standard_name
+	</select>
+	<select id="searchVflcItemsName" parameterType="hashmap"
+		resultType="hashmap">
+		 select t.item_name  ||'['||t.price_code||']' VALUE,t.item_name  ||'['||t.price_code||']' LABEL from kbms_vflc_items t  where 1 = 1
+		 <if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and ( t.item_name like
+			concat(concat('%',#{searchParam}),'%') )  
+			or (t.price_code like concat(concat('%',#{searchParam}),'%')) 
+			or (t.item_name  ||'['|| t.price_code||']' like concat(concat('%',#{searchParam}),'%') )  
+		</if>
+		order by label
+	</select>
+	<select id="searchDrugFctCategory" parameterType="hashmap" resultType="hashmap">
+		select t.id VALUE,T.CATEGORY_NAME LABEL from kbms_drug_fct_category t
+		where 1=1 
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and (T.CATEGORY_NAME like concat(concat('%',#{searchParam}),'%') )
+		</if>
+		order by label
+	</select>
+	<select id="searchVflcFctCategory" parameterType="hashmap" resultType="hashmap">
+		SELECT T.ID VALUE,T.CATEGORY_NAME LABEL FROM KBMS_VFLC_FCT_CATEGORY T
+		where 1=1 
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and (T.CATEGORY_NAME like concat(concat('%',#{searchParam}),'%') 
+			OR
+			T.ID = #{searchParam})
+		</if>
+		order by label
+	</select>
+	<!-- 超适应症限制规则名字和新增建的关联SQL -->
+	<select id="searchFullCSYZXZMZ" parameterType="hashmap" resultType="hashmap">
+	SELECT LIMIT_ELEMENT_NAME LABEL,id VALUE FROM KBMS_RULE_OSDE_S t 
+	where 1=1 
+	<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and (T.LIMIT_ELEMENT_NAME like concat(concat('%',#{searchParam}),'%') )
+		</if>
+		order by label 
+	</select>
+	<select id="searchDrugBigCategory" parameterType="hashmap"
+		resultType="hashmap">
+		select id VALUE,category_name LABEL from (SELECT * FROM KBMS_DRUG_CATEGORY T1 WHERE (SELECT COUNT(1) FROM KBMS_DRUG_CATEGORY_BIG_GENERIC T2 WHERE T2.CATEGORY_ID=T1.ID)=0 OR T1.ID='DC2')
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			where pinyin_code like concat(concat('%',#{searchParam}),'%') or
+			category_name like concat(concat('%',#{searchParam}),'%') or
+			id = #{searchParam}
+		</if>
+	</select>
+
+	<select id="searchDrugSamllCategory" parameterType="hashmap"
+		resultType="hashmap">
+		select id VALUE,category_name LABEL from (SELECT * FROM KBMS_DRUG_CATEGORY T1 WHERE (SELECT COUNT(1) FROM KBMS_DRUG_CATEGORY_BIG_GENERIC T2 WHERE T2.CATEGORY_ID=T1.ID AND T2.CATEGORY_ID!='DC2')>0)
+		where 1=1
+		<if
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+		    and pinyin_code like concat(concat('%',#{searchParam}),'%') or
+			category_name like concat(concat('%',#{searchParam}),'%')or
+			id = #{searchParam}
+		</if>
+		<if test="drugCategoryId != 'all' and drugCategoryId != '' and drugCategoryId != null">
+			and parent_id = #{drugCategoryId}
+	    </if>
+	</select>
+
+	<select id="searchSmallDrugForm" parameterType="hashmap" resultType="hashmap">
+		select DRUG_FORM_NAME
+		LABEL,DRUG_FORM_CODE
+		VALUE from
+		kbms_drug_form
+		where
+		length(drug_form_code) &gt;= 4
+		<if test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and (DRUG_FORM_CODE like concat(concat('%',#{searchParam}),'%')
+			or DRUG_FORM_NAME like concat(concat('%',#{searchParam}),'%')) 
+		</if>
+		<if test="bigDrugFormCode != 'all' and bigDrugFormCode != '' and bigDrugFormCode != null">
+			and substr(drug_form_code,1,length(drug_form_code) - 2) = #{bigDrugFormCode}
+	    </if>
+		order by label
+	</select>
+	
+	<select id="searchBigDrugForm" parameterType="hashmap" resultType="hashmap">
+		select DRUG_FORM_NAME
+		LABEL,DRUG_FORM_CODE
+		VALUE from
+		kbms_drug_form
+		where
+		length(drug_form_code) &lt;= 4
+		<if test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			and (DRUG_FORM_CODE like concat(concat('%',#{searchParam}),'%')
+			or DRUG_FORM_NAME like concat(concat('%',#{searchParam}),'%')) 
+		</if>
+		order by label
+	</select>
+	<select id="searchSmallDrugCategory" parameterType="hashmap" resultType="hashmap">
+	   SELECT 
+	      ID VALUE
+	     ,CATEGORY_NAME LABEL 
+	   FROM 
+	     KBMS_DRUG_CATEGORY 
+	   WHERE
+	     1=1
+	     <if test="searchParam != 'all' and searchParam != '' and searchParam != null">
+	        AND (CATEGORY_NAME like concat(concat('%',#{searchParam}),'%') 
+	             OR ID like concat(concat('%',#{searchParam}),'%')) 
+		</if>
+    </select>
+	<select id="searchDrugCategorySmallGenericName" parameterType="hashmap" resultType="hashmap">
+		SELECT
+		   ID VALUE
+		  ,SMALL_GENERIC_NAME LABEL
+		FROM
+		  KBMS_DRUG_SMALL_GENERIC
+		WHERE
+		  BIG_GENERIC_ID IN (
+		    SELECT
+		       T3.ID
+		     FROM
+		       KBMS_DRUG_CATEGORY T1
+		       LEFT JOIN KBMS_DRUG_CATEGORY_BIG_GENERIC T2 ON T1.ID = T2.CATEGORY_ID
+		       LEFT JOIN KBMS_DRUG_BIG_GENERIC T3 ON T2.BIG_GENERIC_ID = T3.ID
+		     WHERE
+		       T1.ID NOT IN (
+		         SELECT
+		            PARENT_ID 
+		          FROM 
+		            KBMS_DRUG_CATEGORY
+		        )
+		 <if test="drugCategoryType != 'all' and drugCategoryType != '' and drugCategoryType != null">
+			   AND T1.ID = #{drugCategoryType}
+	    </if>
+		     )
+		 <if test="searchParam != 'all' and searchParam != '' and searchParam != null">
+		       AND (SMALL_GENERIC_NAME like concat(concat('%',#{searchParam}),'%') 
+		            OR ID like concat(concat('%',#{searchParam}),'%'))  
+		</if>
+		ORDER BY LABEL
+	</select>
+    <select id="searchDrugCategoryFullSJJX" parameterType="hashmap" resultType="hashmap">
+		select
+		   DRUG_FORM_CODE VALUE
+		  ,DRUG_FORM_NAME LABEL
+		from
+		  kbms_drug_form
+		where
+		length(drug_form_code) > 2
+	    <if test="productTpye != 'all' and productTpye != '' and productTpye != null">
+			AND DRUG_FORM_CODE in (
+			  SELECT
+			    ACTUAL_FORM_CODE 
+			  FROM 
+                KBMS_DRUG_INSTRUCTIONS
+              WHERE
+                ID=#{productTpye}
+			)
+	    </if>
+		<if test="drugFormTpye != 'all' and drugFormTpye != '' and drugFormTpye != null">
+			AND DRUG_FORM_CODE in (
+			  SELECT
+			    ACTUAL_FORM_CODE 
+			  FROM 
+                KBMS_DRUG_INSTRUCTIONS
+              WHERE
+                SMALL_GENERIC_ID=#{drugFormTpye}
+			)
+	    </if>
+	    <if test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			AND (DRUG_FORM_NAME like concat(concat('%',#{searchParam}),'%') 
+			     OR DRUG_FORM_CODE like concat(concat('%',#{searchParam}),'%')) 
+		</if>
+		order by label
+	</select>
+	<!-- 之前在【超适应症2】中查找【药品类别】用，由于需求更改后，改为searchDrugCategoryProductName的查询方式 -->
+	<select id="searchDrugCategoryProductName" parameterType="hashmap" resultType="hashmap">
+		SELECT
+		   ID VALUE
+		  ,PRODUCT_NAME LABEL
+		FROM
+          KBMS_DRUG_INSTRUCTIONS
+        WHERE 
+          1=1
+        <if test="drugFormTpye != 'all' and drugFormTpye != '' and drugFormTpye != null">
+          AND SMALL_GENERIC_ID=#{drugFormTpye}
+	    </if>
+	    	    <if test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			AND (PRODUCT_NAME like concat(concat('%',#{searchParam}),'%') 
+			     OR ID like concat(concat('%',#{searchParam}),'%')) 
+		</if>
+		ORDER BY LABEL
+	</select>
+	<select id="searchEditionName" parameterType="hashmap" resultType="hashmap">
+		SELECT
+		   ID VALUE
+		  ,EDITION_LIDRARY LABEL
+		FROM
+          KBMS_EDITION_LIDRARY
+        WHERE 
+          1=1
+	    <if test="searchParam != 'all' and searchParam != '' and searchParam != null">
+		  AND (ID like concat(concat('%',#{searchParam}),'%') 
+		       OR EDITION_LIDRARY like concat(concat('%',#{searchParam}),'%')) 
+		</if>
+		ORDER BY LABEL
+	</select>
+	<select id="selectItemEditionLidraryName" parameterType="hashmap"
+		resultType="hashmap">
+		SELECT ID VALUE,EDITION_LIDRARY LABEL FROM KBMS_DG_PRJ_EDITION
+	</select>
+	<select id="selectEditionLidraryName" parameterType="hashmap"
+		resultType="hashmap">
+		SELECT ID VALUE,EDITION_LIDRARY LABEL FROM KBMS_EDITION_LIDRARY
+	</select>
+	<select id="selectDrugMappingsource" parameterType="hashmap"
+		resultType="hashmap">
+		SELECT SOURCE LABEL,SOURCE VALUE FROM KBMS_DRUG_CITY_MAPPING_RESULT
+		GROUP BY SOURCE
+	</select>
+	<select id="selectDrugCityConfigsource" parameterType="hashmap"
+		resultType="hashmap">
+		SELECT SOURCE LABEL,SOURCE VALUE FROM KBMS_DRUG_CITY_CONFIG
+		GROUP BY SOURCE
+	</select>
+	<select id="searchFileDM" parameterType="hashmap" resultType="hashmap">
+		SELECT ID VALUE, MC LABEL, TCQBBH FROM S03_TABLE
+		WHERE
+		1=1
+		<if 
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			AND (
+				MC like 
+					concat(concat('%',#{searchParam}),'%')
+				OR 
+				ID like 
+					concat(concat('%',#{searchParam}),'%')
+				OR
+				TCQBBH like
+					concat(concat('%',#{searchParam}),'%')
+			)
+		</if>
+		order by label
+	</select>
+	<select id="searchFileTCQBBH" parameterType="hashmap" resultType="hashmap">
+		SELECT TCQBBH VALUE ,TCQBBH from s03_table
+		WHERE
+		1=1
+		<if 
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			AND (
+				TCQBBH like concat(concat('%',#{searchParam}),'%')
+			)
+		</if>
+		order by label
+	</select>
+	<select id="searchJavaBeanId" parameterType="hashmap" resultType="hashmap">
+		SELECT ID VALUE, MC LABEL from S04_JAVABEAN
+		WHERE
+		1=1
+		<if test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			AND (
+				MC like concat( concat( '%',#{searchParam}),'%')
+				OR 
+				ID like concat( concat( '%',#{searchParam}),'%')
+			)
+		</if>
+		order by label
+	</select>
+	<select id="searchJavaBeanPropertyId" parameterType="hashmap" resultType="hashmap">
+		SELECT TABLE_COLUMN_ID VALUE, MC LABEL from S04_JAVABEAN_PROPERTY
+		WHERE
+		1=1
+		<if 
+			test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			AND (
+				MC like concat( concat( '%',#{searchParam}),'%')
+				OR 
+				TABLE_COLUMN_ID like concat( concat( '%',#{searchParam}),'%')
+			)
+		</if>
+		order by label
+	</select>
+	<!-- 山东三目录 诊疗项目原始信息查询数据源用 （在区分原始信息和去重信息之前使用。目前应该是废弃了）-->
+	<select id="selectDgPrjCitySource" parameterType="hashmap"
+		resultType="hashmap">
+		SELECT SOURCE LABEL,SOURCE VALUE FROM KBMS_CITY_DG_PRJ
+		GROUP BY SOURCE
+	</select>
+	<!-- 山东三目录 诊疗项目原始信息查询数据源用 -->
+	<select id="selectDgPrjCityPrimarySource" parameterType="hashmap" resultType="hashmap">
+		SELECT SOURCE LABEL,SOURCE VALUE FROM KBMS_CITY_DG_PRJ_PRIMARY
+		GROUP BY SOURCE
+	</select>
+	<select id="selectDgPrjEdition" parameterType="hashmap" resultType="hashmap">
+		SELECT ID VALUE,EDITION_LIDRARY LABEL FROM KBMS_DG_PRJ_EDITION
+	</select>
+	<select id="selectDgPrjMappingsource" parameterType="hashmap" resultType="hashmap">
+		SELECT SOURCE LABEL,SOURCE VALUE FROM KBMS_CITY_DG_PRJ_RESULT
+		GROUP BY SOURCE
+	</select>
+	<select id="selectRuleLimitElement" parameterType="hashmap" resultType="hashmap">
+		SELECT LIMIT_ELEMENT_NAME LABEL, LIMIT_ELEMENT_CODE VALUE FROM KBMS_RULE_LIMIT_ELEMENT
+	</select>
+	<select id="selectSFTJ" parameterType="hashmap" resultType="hashmap">
+		SELECT NAME LABEL, VALUE VALUE FROM KBMS_DICTIONARY WHERE TYPE_CODE = 'SFTJ'
+	</select>
+	<select id="selectBigGenericName" parameterType="hashmap" resultType="hashmap">
+		SELECT T2.ID,T2.BIG_GENERIC_NAME FROM KBMS_DRUG_BIG_GENERIC_FORM T1 LEFT JOIN KBMS_DRUG_BIG_GENERIC T2 ON T1.BIG_GENERIC_ID = T2.ID
+	</select>
+	<select id="selectSmalleGenericName" parameterType="hashmap" resultType="hashmap">
+		SELECT T3.ID VALUE, T3.SMALL_GENERIC_NAME LABEL
+		  FROM KBMS_DRUG_SMALL_GENERIC_LFORM T1,
+		       KBMS_DRUG_FORM                T2,
+		       KBMS_DRUG_SMALL_GENERIC       T3
+		 WHERE T1.LABEL_FORM_CODE = T2.DRUG_FORM_CODE
+		   AND T1.SMALL_GENERIC_ID = T3.ID
+	</select>
+	<!--在DrugBigGenericAndForm上使用，日志用。-->
+	<select id="searchFullSJJXLog" parameterType="hashmap" resultType="hashmap">
+		SELECT TT1.ACTUAL_FORM_CODE VALUE,
+		       T3.DRUG_FORM_NAME || '[' || TT1.ACTUAL_FORM_CODE || ']' LABEL
+		  FROM (SELECT T1.*, T2.BIG_GENERIC_NAME
+		          FROM KBMS_DRUG_BIG_GENERIC_FORM T1
+		          LEFT JOIN KBMS_DRUG_BIG_GENERIC T2
+		            ON T1.BIG_GENERIC_ID = T2.ID) TT1
+		  LEFT JOIN KBMS_DRUG_FORM T3
+		    ON T3.DRUG_FORM_CODE = TT1.ACTUAL_FORM_CODE
+	</select>
+	<!--山东三目录 —— 药品映射结果无映射类别-->
+	<select id="serarchNotMappingTypeDrug" parameterType="hashmap" resultType="hashmap">
+		SELECT VALUE VALUE, NAME LABEL FROM KBMS_DICTIONARY WHERE TYPE_CODE = 'NOTMAPPINGTYPEDRUG'
+	</select>
+	<!--山东三目录 —— 诊疗项目和映射无映射类别-->
+	<select id="searchNotMappingTypeVflc" parameterType="hashmap" resultType="hashmap">
+		SELECT VALUE VALUE, NAME LABEL FROM KBMS_DICTIONARY WHERE TYPE_CODE = 'NOTMAPPINGTYPEVFLC'
+	</select>
+	<!--	【超适应症界面】 - -->
+	<select id="searchCategoryNameByDrugType" parameterType="hashmap" resultType="hashmap">
+		SELECT TT4.ID VALUE, TT4.CATEGORY_NAME LABEL
+		  FROM (SELECT *
+		          FROM (SELECT REGEXP_SUBSTR(TT.CODE, '[^|]+', 1, rn) CODE,
+		                       TT.SMALL_GENERIC_ID
+		                  FROM (SELECT T7.CODE,
+		                               T6.SMALL_GENERIC_ID,
+		                               T6.SMALL_GENERIC_NAME
+		                          FROM kbms_drug_category T7
+		                          LEFT JOIN (SELECT T4.*, T5.CATEGORY_ID
+		                                      FROM (SELECT T1.ID                 BIG_GENERIC_ID,
+		                                                   T2.ID                 SMALL_GENERIC_ID,
+		                                                   T2.SMALL_GENERIC_NAME
+		                                              FROM KBMS_DRUG_BIG_GENERIC T1
+		                                              LEFT JOIN KBMS_DRUG_SMALL_GENERIC T2
+		                                                ON T2.BIG_GENERIC_ID = T1.ID) T4
+		                                      LEFT JOIN KBMS_DRUG_CATEGORY_BIG_GENERIC T5
+		                                        ON T4.BIG_GENERIC_ID =
+		                                           T5.BIG_GENERIC_ID) T6
+		                            ON T7.ID = T6.CATEGORY_ID
+		                         WHERE T6.SMALL_GENERIC_ID = #{smallGenericId,jdbcType=VARCHAR}) TT,
+		                       (SELECT ROWNUM rn FROM DUAL CONNECT BY ROWNUM &lt; = 6)) TT1
+		         WHERE CODE IS NOT NULL) TT3
+		  LEFT JOIN kbms_drug_category TT4
+		    ON TT3.CODE = TT4.ID
+	</select>
+	
+	<!-- 根据药品通用名的id查找药品类别。-->
+	<select id="searchSmallGenericIdByCategoryName" parameterType="hashmap" resultType="hashmap">
+		SELECT  T3.ID VALUE,T3.CATEGORY_NAME LABEL
+	  FROM (SELECT BIG_GENERIC_ID, SMALL_GENERIC_NAME
+	          FROM KBMS_DRUG_SMALL_GENERIC
+	         WHERE ID = #{smallGenericId,jdbcType=VARCHAR}) T1,
+	       KBMS_DRUG_CATEGORY_BIG_GENERIC T2,
+	       kbms_drug_category T3
+	 WHERE T1.BIG_GENERIC_ID = T2.BIG_GENERIC_ID
+	   AND T2.CATEGORY_ID = T3.ID
+	</select>
+	
+	<!-- 批量添加标志类型的window上加载参数 -->
+	<select id="selectCSYZSIGNTYPE" parameterType="hashmap" resultType="hashmap">
+		SELECT NAME LABEL, VALUE VALUE FROM KBMS_DICTIONARY WHERE TYPE_CODE = 'CSYZSIGNTYPE'
+	</select>
+	
+	<!-- 辅助用药规则大通用名列使用 -->
+	<select id="selectBigGenericNameFzyy" parameterType="hashmap" resultType="hashmap">
+		SELECT ID VALUE, BIG_GENERIC_NAME LABEL FROM KBMS_DRUG_BIG_GENERIC 
+		WHERE 1=1
+		<if test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			AND ( 
+				BIG_GENERIC_NAME like concat( concat( '%',#{searchParam}),'%')
+				OR
+				ID like concat( concat( '%',#{searchParam}),'%')	
+			)
+		</if>
+		ORDER BY ID
+	</select>
+	
+	<!--2012版诊疗项目原始信息数据源分组查询-->
+	<select id="selectVflcItemTermSource2012" parameterType="hashmap"
+		resultType="hashmap">
+		SELECT source LABEL,source VALUE FROM
+		kbms_term_out_primary_vflc_12 t
+		group by source
+	</select>
+	
+    <select id="searchMenuName" parameterType="hashmap" resultType="hashmap">
+		SELECT MNU_NM LABEL,MNU_NM VALUE FROM KBMS_CLINICAL_CLASS_NAME
+		WHERE 1=1
+		<if test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			AND MNU_NM LIKE CONCAT(CONCAT('%',#{searchParam}),'%')
+		</if>
+		GROUP BY MNU_NM
+	</select>
+
+	<select id="searchModuleName" parameterType="hashmap" resultType="hashmap">
+    	SELECT MOD_NM LABEL,MOD_NM VALUE  FROM KBMS_CLINICAL_CLASS_NAME
+    	WHERE 1=1
+		<if test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			AND MOD_NM LIKE CONCAT(CONCAT('%',#{searchParam}),'%')
+		</if>
+		<if test="moduleName != 'all' and moduleName != '' and moduleName != null">
+			AND MNU_NM = #{moduleName}
+		</if>
+		GROUP BY MOD_NM
+	</select>
+
+	<select id="searchUserName" parameterType="hashmap" resultType="hashmap">
+		SELECT REAL_NAME LABEL,T1.USER_NAME VALUE FROM KBMS_USER T1 LEFT JOIN KBMS_USER_ROLE T2 
+			ON T1.USER_NAME = T2.USER_NAME
+		WHERE 1=1
+		<if test="searchParam != 'all' and searchParam != '' and searchParam != null">
+			AND T1.REAL_NAME LIKE CONCAT(CONCAT('%',#{searchParam}),'%')
+		</if>
+		<if test="roleId != 'all' and roleId != '' and roleId != null">
+			AND T2.ROLE_ID = #{roleId}
+		</if>
+	</select>
+	
+	<!--超适应症 日志记录药品类别列使用 查询用 -->
+	<select id="searchDrugCategoryLog" parameterType="hashmap"
+		resultType="hashmap">
+		SELECT ID VALUE, CATEGORY_NAME LABEL FROM
+		KBMS_DRUG_CATEGORY
+	</select>
+	
+		<!-- Log后缀代表日志记录中代码翻译成中文的数据字典 -->
+	<select id="drugBigGenericLog" parameterType="hashmap"
+		resultType="hashmap">
+		SELECT ID VALUE,BIG_GENERIC_NAME LABEL FROM KBMS_DRUG_BIG_GENERIC
+	</select>
+	
+	<select id="drugFormLog" parameterType="hashmap"
+		resultType="hashmap">
+		SELECT DRUG_FORM_CODE VALUE,DRUG_FORM_NAME LABEL FROM KBMS_DRUG_FORM
+	</select>
+</mapper>

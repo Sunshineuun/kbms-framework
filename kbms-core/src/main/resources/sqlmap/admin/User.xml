@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="UserMapper">
+	<update id="updatePassword" parameterType="hashmap">
+		update kbms_user set
+		PASSWORD=#{password,jdbcType=VARCHAR}
+		where
+		USER_NAME=#{userName,jdbcType=VARCHAR}
+	</update>
+	<update id="changeWsKey" parameterType="hashmap">
+		update kbms_user set
+		WS_KEY=#{wsKey,jdbcType=VARCHAR}
+		where
+		USER_NAME=#{userName,jdbcType=VARCHAR}
+	</update>
+	<delete id="deleteUserRolesByUserName" parameterType="java.lang.String">
+		delete from
+		kbms_user_role
+		where user_name=#{userName,jdbcType=VARCHAR}
+	</delete>
+	<insert id="grantRoleToUser" parameterType="hashmap">
+		insert into
+		kbms_user_role
+		(ID,USER_NAME,ROLE_ID)
+		values
+		(#{id,jdbcType=VARCHAR},
+		#{userName,jdbcType=VARCHAR},#{roleId,jdbcType=VARCHAR})
+	</insert>
+</mapper>

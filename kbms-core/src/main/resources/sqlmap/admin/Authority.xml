@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="AuthorityMapper">
+	<resultMap id="UserAuthorityMap" type="com.winning.domain.kbms.core.UserAuthority">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="AUTH_PARENT_CODE" property="authParentCode"
+			jdbcType="VARCHAR" />
+		<result column="AUTH_CHILD_CODE" property="authChildCode"
+			jdbcType="VARCHAR" />
+		<result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+		<result column="MENU_ID" property="menuId" jdbcType="VARCHAR" />
+		<result column="AUTH_TYPE" property="authType" jdbcType="INTEGER" />
+	</resultMap>
+	<resultMap id="RoleAuthorityMap" type="com.winning.domain.kbms.core.RoleAuthority">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="AUTH_PARENT_CODE" property="authParentCode"
+			jdbcType="VARCHAR" />
+		<result column="AUTH_CHILD_CODE" property="authChildCode"
+			jdbcType="VARCHAR" />
+		<result column="ROLE_ID" property="roleId" jdbcType="VARCHAR" />
+		<result column="MENU_ID" property="menuId" jdbcType="VARCHAR" />
+		<result column="AUTH_TYPE" property="authType" jdbcType="INTEGER" />
+	</resultMap>
+	<insert id="addUserAuthority" parameterType="com.winning.domain.kbms.core.UserAuthority">
+		insert into
+		KBMS_USER_AUTHORITY
+		(ID,AUTH_PARENT_CODE,AUTH_CHILD_CODE,USER_NAME,MENU_ID,AUTH_TYPE)
+		values
+		(#{id,jdbcType=VARCHAR}, #{authParentCode,jdbcType=VARCHAR},
+		#{authChildCode,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR},
+		#{menuId,jdbcType=VARCHAR},#{authType,jdbcType=INTEGER})
+	</insert>
+	<update id="updateUserAuthority" parameterType="com.winning.domain.kbms.core.UserAuthority">
+		update
+		KBMS_USER_AUTHORITY set
+		AUTH_PARENT_CODE=#{authParentCode,jdbcType=VARCHAR},
+		AUTH_CHILD_CODE=#{authChildCode,jdbcType=VARCHAR},
+		USER_NAME=#{userName,jdbcType=VARCHAR},
+		AUTH_TYPE=#{authType,jdbcType=INTEGER},
+		MENU_ID=#{menuId,jdbcType=VARCHAR} where id=#{id,jdbcType=VARCHAR}
+	</update>
+	<delete id="removeUserAuthority" parameterType="com.winning.domain.kbms.core.UserAuthority">
+		delete from
+		KBMS_USER_AUTHORITY where id=#{id,jdbcType=VARCHAR}
+	</delete>
+	<delete id="removeUserAuthorityByUserName" parameterType="java.lang.String">
+		delete
+		from
+		KBMS_USER_AUTHORITY where user_name=#{userName,jdbcType=VARCHAR}
+	</delete>
+	<select id="getUserAuthorityByUserName" resultMap="UserAuthorityMap">
+		select *
+		from
+		KBMS_USER_AUTHORITY t where user_name=#{userName,jdbcType=VARCHAR} and
+		t.auth_parent_code is not null and auth_type=1 and t.auth_child_code is
+		not null
+	</select>
+	<delete id="removeRoleAuthorityByRoleId" parameterType="java.lang.String">
+		delete
+		from
+		KBMS_ROLE_AUTHORITY where role_id=#{roleId,jdbcType=VARCHAR}
+	</delete>
+	<select id="addRoleAuthority" parameterType="com.winning.domain.kbms.core.RoleAuthority">
+		insert into
+		KBMS_ROLE_AUTHORITY
+		(ID,AUTH_PARENT_CODE,AUTH_CHILD_CODE,ROLE_ID,MENU_ID,AUTH_TYPE)
+		values
+		(#{id,jdbcType=VARCHAR}, #{authParentCode,jdbcType=VARCHAR},
+		#{authChildCode,jdbcType=VARCHAR}, #{roleId,jdbcType=VARCHAR},
+		#{menuId,jdbcType=VARCHAR},#{authType,jdbcType=INTEGER})
+	</select>
+	<select id="getRoleAuthorityByUserName" resultMap="RoleAuthorityMap">
+		select *
+		from
+		KBMS_role_AUTHORITY t
+		where role_id in (select role_id
+		from
+		kbms_user_role tt1, kbms_role tt2
+		where tt1.user_name =
+		#{userName,jdbcType=VARCHAR}
+		and tt2.enable = 1 and auth_type=1)
+		and
+		t.auth_parent_code
+		is not null
+		and t.auth_child_code is not null
+	</select>
+	<select id="getWsRoleAuthorityByUserName" resultMap="RoleAuthorityMap">
+		select *
+		from
+		KBMS_role_AUTHORITY t
+		where role_id in (select role_id
+		from
+		kbms_user_role tt1, kbms_role tt2
+		where tt1.user_name =
+		#{userName,jdbcType=VARCHAR}
+		and tt2.enable = 1 and auth_type=2)
+		and
+		t.auth_parent_code
+		is not null
+		and t.auth_child_code is not null
+	</select>
+	<select id="getWsUserAuthorityByUserName" resultMap="UserAuthorityMap">
+		select *
+		from
+		KBMS_USER_AUTHORITY t where user_name=#{userName,jdbcType=VARCHAR}
+		and
+		t.auth_parent_code is not null and auth_type=2 and t.auth_child_code
+		is not null
+	</select>
+</mapper>

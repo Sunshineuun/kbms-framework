@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="RoleMapper">
+	<select id="getRoleByUserName" resultMap="DefaultMapper.RoleMap">
+		select *
+		from
+		kbms_role
+		t1,
+		kbms_user_role t2
+		where t2.user_name = #{userName,jdbcType=VARCHAR}
+		and t1.id = t2.role_id
+	</select>
+</mapper>
