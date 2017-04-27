@@ -1,21 +1,3 @@
-/*
- * ==================================================================== Licensed
- * to the Apache Software Foundation (ASF) under one or more contributor license
- * agreements. See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership. The ASF licenses this file to You
- * under the Apache License, Version 2.0 (the "License"); you may not use this
- * file except in compliance with the License. You may obtain a copy of the
- * License at
- * 
- * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- * ====================================================================
- */
 package com.winning.kbms.core.service.impl;
 
 import java.io.IOException;
@@ -55,7 +37,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * FileInputStream("c:\\test.xlsx"); Workbook wb=new XSSFWorkbook(file);
  * 
  * 
- * @author 山人
+ * 
  */
 public class XLSXCovertCSVReader {
 
@@ -156,8 +138,6 @@ public class XLSXCovertCSVReader {
         @Override
         public void startElement(String uri, String localName, String name,
             Attributes attributes) throws SAXException {
-
-            logger.info("startElement");
 
             if ("inlineStr".equals(name) || "v".equals(name)) {
                 vIsOpen = true;
@@ -365,6 +345,8 @@ public class XLSXCovertCSVReader {
     private OPCPackage xlsxPackage;
 
     private int minColumns;
+    
+    private String sheetName;
 
     private PrintStream output;
 
@@ -380,10 +362,11 @@ public class XLSXCovertCSVReader {
      *        minimum
      */
     public XLSXCovertCSVReader(OPCPackage pkg, PrintStream output,
-        int minColumns) {
+        int minColumns, String sheetName) {
         this.xlsxPackage = pkg;
         this.output = output;
         this.minColumns = minColumns;
+        this.sheetName = sheetName;
     }
 
 
@@ -453,16 +436,13 @@ public class XLSXCovertCSVReader {
 
             /* 获取当前迭代器的sheet名称 */
             String sheetNameTemp = iter.getSheetName();
-
-            logger.debug("Sheet页 >> " + sheetNameTemp);
-
-            /* 存储读取结果 */
-            list.addAll(processSheet(styles, strings, stream));
-
+            
+            if(sheetNameTemp.equals(sheetName)){
+                /* 存储读取结果 */
+                list.addAll(processSheet(styles, strings, stream));
+            }
             /* 关闭流 */
             stream.close();
-
-            break;
         }
         return list;
     }
@@ -484,12 +464,13 @@ public class XLSXCovertCSVReader {
      *         通过路径的形式读取Excel
      *         </p>
      */
-    public static List<String[]> readerExcel(String path, int minColumns)
+    public static List<String[]> readerExcel(String path, int minColumns, 
+        String sheetName)
         throws IOException, OpenXML4JException, ParserConfigurationException,
         SAXException {
         OPCPackage p = OPCPackage.open(path, PackageAccess.READ);
         XLSXCovertCSVReader xlsx2csv =
-                new XLSXCovertCSVReader(p, System.out, minColumns);
+                new XLSXCovertCSVReader(p, System.out, minColumns, sheetName);
         List<String[]> list = xlsx2csv.process();
         p.close();
         return list;
@@ -512,21 +493,22 @@ public class XLSXCovertCSVReader {
      *         通过流的形式读取Excel
      *         </p>
      */
-    public static List<String[]> readerExcel(InputStream ipn, int minColumns)
+    public static List<String[]> readerExcel(InputStream ipn, int minColumns, 
+        String sheetName)
         throws IOException, OpenXML4JException, ParserConfigurationException,
         SAXException {
         List<String[]> result = new ArrayList<String[]>();
 
         OPCPackage p = OPCPackage.open(ipn);
         XLSXCovertCSVReader xlsx2csv =
-                new XLSXCovertCSVReader(p, System.out, minColumns);
+                new XLSXCovertCSVReader(p, System.out, minColumns,sheetName);
         result = xlsx2csv.process();
         return result;
     }
 
     public static void main(String[] args) throws Exception {
         List<String[]> result =
-                XLSXCovertCSVReader.readerExcel("d:\\2.xlsx", 50);
+                XLSXCovertCSVReader.readerExcel("d:\\药品标准目录.xlsx", 50,"药品目录");
         System.out.println(result);
     }
 }

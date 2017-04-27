@@ -42,7 +42,7 @@ public abstract class AbstractImportService<T extends ModifyDomain> extends Abst
 
     /* 表格中最小列数 */
     private Integer minColumns = 0;
-
+    
     @Autowired
     private DictionaryService dictionaryService;
 
@@ -73,7 +73,7 @@ public abstract class AbstractImportService<T extends ModifyDomain> extends Abst
         
         List<String[]> csvData = new ArrayList<String[]>();
         try {
-            csvData = XLSXCovertCSVReader.readerExcel(is, getMinColumns());
+            csvData = XLSXCovertCSVReader.readerExcel(is, getMinColumns(), getSheetName());
         }
         catch (Exception e) {
             logger.equals(e);
@@ -406,4 +406,9 @@ public abstract class AbstractImportService<T extends ModifyDomain> extends Abst
     protected Integer getMinColumns() {
         return minColumns;
     }
+    
+    protected String getSheetName() {
+        return "";
+    }
+    
 }
